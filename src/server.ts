@@ -41,12 +41,17 @@ const initDB = async () => {
 };
 
 initDB();
+//loger middleware
 
+const logger = (req: Request, res: Response, next: express.NextFunction) =>{
+    console.log(`${new Date().toISOString()} ${req.method} ${req.path}\n`)
+    next();
+}
 
 //parser
 app.use(express.json());
 
-app.get('/', (req:Request, res:Response) => {
+app.get('/', logger,(req:Request, res:Response) => {
   res.send('Hello Raju!')
 })
 //user CRUD
@@ -92,7 +97,7 @@ app.get('/users', async(req:Request, res:Response)=> {
 })
 
 app.get('/users/:id', async(req : Request, res: Response) =>{
-    console.log(req.params.id);
+    // console.log(req.params.id);
    try{
     const result = await pool.query(`SELECT * FROM users WHERE id = $1`, [req.params.id]);
     if(result.rows.length === 0 ){
@@ -115,6 +120,104 @@ app.get('/users/:id', async(req : Request, res: Response) =>{
         })
    }
 })
+
+app.put('/users/:id', async(req : Request, res: Response) =>{
+    // console.log(req.params.id);
+    const {name, email} = req.body;
+   try{
+    const result = await pool.query(`UPDATE users SET name = $1, email = $2 WHERE id = $3 RETURNING *`, [name, email, req.params.id]);
+    if(result.rows.length === 0 ){
+        res.status(404).json({
+            success: false,
+            message: 'user not found',
+        })
+    }else{
+        res.status(200).json({
+            success: true,
+            message: 'user data updated successfully',
+            data: result.rows[0]
+        })
+    }
+   }catch(err:any){
+        res.status(500).json({
+            success: false,
+            message: err.message,
+            details: err,
+        })
+   }
+})
+
+app.delete('/users/:id', async(req : Request, res: Response) =>{
+    // console.log(req.params.id);
+   try{
+    const result = await pool.query(`DELETE FROM users WHERE id = $1 RETURNING *`, [req.params.id]);
+    if(result.rows.length === 0 ){
+        res.status(404).json({
+            success: false,
+            message: 'user not found',
+        })
+    }else{
+        res.status(200).json({
+            success: true,
+            message: 'user data deleted successfully',
+            data: null,
+        })
+    }
+   }catch(err:any){
+        res.status(500).json({
+            success: false,
+            message: err.message,
+            details: err,
+        })
+   }
+})
+
+//todo CRUD
+app.post('/todos', async (req: Request, res: Response) => {
+    const {user_id, title} = req.body;
+
+    try{
+        const result = await pool.query(`INSERT INTO todos(user_id, title) VALUES($1, $2) RETURNING * `,[user_id, title]);
+        res.status(201).json({
+            success: true,
+            message: 'todo created successfully',
+            data: result.rows[0]
+        });
+    } catch (err: any) {
+        res.status(500).json({
+            success: false,
+            message: err.message,
+            details: err,
+        })
+    }
+})
+
+app.get('/todos', async(req:Request, res:Response)=> {
+    try{
+        const result = await pool.query(`SELECT * FROM todos`);
+
+        res.status(200).json({
+            success: true,
+            message: 'todo data fetched successfully',
+            data: result.rows,
+        })
+
+    }catch(err: any){
+        res.status(500).json({
+            success: false,
+            message: err.message,
+            details: err,
+        })
+    }
+})
+
+app.use((req: Request, res: Response) => {
+    res.status(404).json({
+        success: false,
+        message: 'Route not found',
+        path: req.originalUrl,
+    });
+});
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
