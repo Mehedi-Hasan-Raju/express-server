@@ -1,6 +1,8 @@
 import express, {Request, Response } from 'express';
 import initDB, { pool } from './config/db';
 import config from './config';
+import logger from './middleware/logger';
+import { userRoute } from './modules/users/users.routes';
 
 
 
@@ -12,12 +14,7 @@ const port = config.port;
 
 //initialize database
 initDB();
-//loger middleware
 
-const logger = (req: Request, res: Response, next: express.NextFunction) =>{
-    console.log(`${new Date().toISOString()} ${req.method} ${req.path}\n`)
-    next();
-}
 
 //parser
 app.use(express.json());
@@ -26,27 +23,29 @@ app.get('/', logger,(req:Request, res:Response) => {
   res.send('Hello Raju!')
 })
 //user CRUD
-app.post('/users', async (req:Request, res:Response)=>{
-    const {name, email} = req.body;
 
-    try{
-        const result = await pool.query(`INSERT INTO users(name, email) VALUES($1, $2) RETURNING *`,[name, email]);
-        // console.log(result.rows[0]);
+app.use('/users', userRoute)
+// app.post('/users', async (req:Request, res:Response)=>{
+//     const {name, email} = req.body;
+
+//     try{
+//         const result = await pool.query(`INSERT INTO users(name, email) VALUES($1, $2) RETURNING *`,[name, email]);
+//         // console.log(result.rows[0]);
         
-        res.status(201).json({
-            success: true,
-            message: 'data inserted successfully',
-            data: result.rows[0]
-        })
+//         res.status(201).json({
+//             success: true,
+//             message: 'data inserted successfully',
+//             data: result.rows[0]
+//         })
        
         
-    }catch(err: any){
-        res.status(500).json({
-            success: false,
-            message: err.message
-        })
-    }
-});
+//     }catch(err: any){
+//         res.status(500).json({
+//             success: false,
+//             message: err.message
+//         })
+//     }
+// });
 
 app.get('/users', async(req:Request, res:Response)=> {
     try{
