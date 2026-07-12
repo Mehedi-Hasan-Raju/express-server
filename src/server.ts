@@ -24,17 +24,12 @@ app.get('/', logger,(req:Request, res:Response) => {
 //user CRUD
 
 app.use('/users', userRoute)
-app.use("/users", userRoute)
-app.get('/users/', userRoute)
-app.put('/users/', userRoute)
-app.delete('/users/', userRoute)
+
 
 
 //todo CRUD
 app.use('/todos',todosroutes)
-app.use('/todos', todosroutes)
-app.put('/todos/', todosroutes);
-app.delete('/todos/', todosroutes);
+
 
 
 app.use((req: Request, res: Response) => {
