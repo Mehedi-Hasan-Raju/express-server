@@ -1,20 +1,26 @@
 # Express.js + TypeScript + PostgreSQL Todo API
 
-A RESTful Todo API built with **Express.js**, **TypeScript**, and **PostgreSQL**. This project demonstrates how to build a scalable backend using Express, connect a PostgreSQL database with `pg` Pool, implement CRUD operations, use middleware, and manage relationships between users and todos.
+A scalable RESTful Todo API built with **Express.js**, **TypeScript**, and **PostgreSQL**.
+
+This project demonstrates backend development concepts including REST API design, PostgreSQL integration, CRUD operations, middleware handling, database relationships, and scalable backend architecture.
+
+During development, I started with the traditional **MVC (Model-View-Controller)** pattern to understand separation of concerns and later refactored the project into a **Modular Architecture** to make the codebase more scalable and maintainable.
 
 ---
 
 ## 🚀 Features
 
 - ⚡ Express.js with TypeScript
-- 🗄️ PostgreSQL Database
+- 🗄️ PostgreSQL Database Integration
 - 🔗 Database connection using `pg` Pool
 - 👤 User CRUD Operations
 - ✅ Todo CRUD Operations
-- 🔄 One-to-Many relationship (One User → Many Todos)
+- 🔄 One-to-Many Relationship (User → Todos)
 - 🛣️ RESTful API Design
 - 🧩 Express Middleware
-- ❌ Global Not Found Route Handler
+- 🏗️ Modular Backend Architecture
+- ⚙️ Service Layer Pattern
+- ❌ Global Error & Not Found Handling
 - 🌍 Environment Variable Configuration
 
 ---
@@ -24,29 +30,98 @@ A RESTful Todo API built with **Express.js**, **TypeScript**, and **PostgreSQL**
 - Express.js
 - TypeScript
 - PostgreSQL
-- pg (Node PostgreSQL)
+- pg (Node PostgreSQL Driver)
 - dotenv
 - ts-node-dev
+- Node.js
 
 ---
 
+# 🏗️ Architecture Pattern
+
+## MVC Pattern
+
+Initially, this project was developed using the traditional **MVC (Model-View-Controller)** architecture.
+
+MVC helped me understand:
+
+- Separation of concerns
+- Organizing routes, controllers, and database logic
+- Managing application flow
+- Writing cleaner backend code
+
+Basic MVC structure:
+
+```
+src/
+│
+├── models/
+├── controllers/
+├── routes/
+└── app.ts
+```
+
 ---
 
-## 📦 Installation
+## Modular Architecture
 
-Clone the repository
+After understanding MVC, I refactored this project into a **Feature-Based Modular Architecture**.
+
+Instead of keeping all models, controllers, and routes in separate folders, each feature contains its own related files.
+
+Example:
+
+```
+src/
+│
+├── modules/
+│   │
+│   ├── user/
+│   │   ├── user.controller.ts
+│   │   ├── user.service.ts
+│   │   ├── user.model.ts
+│   │   └── user.route.ts
+│   │
+│   └── todo/
+│       ├── todo.controller.ts
+│       ├── todo.service.ts
+│       ├── todo.model.ts
+│       └── todo.route.ts
+│
+├── config/
+├── middleware/
+├── utils/
+└── app.ts
+```
+
+Using Modular Architecture helped me understand how scalable backend applications are structured.
+
+### Benefits of Modular Architecture:
+
+- Better scalability
+- Cleaner code organization
+- Easier maintenance
+- Feature-based development
+- Better separation of business logic
+- Easier collaboration in large projects
+
+---
+
+# 📦 Installation
+
+Clone the repository:
 
 ```bash
 git clone https://github.com/your-username/your-repository.git
 ```
 
-Go to the project folder
+Go to the project folder:
 
 ```bash
 cd your-repository
 ```
 
-Install dependencies
+Install dependencies:
 
 ```bash
 npm install
@@ -54,7 +129,7 @@ npm install
 
 ---
 
-## ⚙️ Environment Variables
+# ⚙️ Environment Variables
 
 Create a `.env` file in the root directory.
 
@@ -70,21 +145,21 @@ DB_NAME=your_database_name
 
 ---
 
-## ▶️ Run the Project
+# ▶️ Run the Project
 
-Development Mode
+## Development Mode
 
 ```bash
 npm run dev
 ```
 
-Build the project
+## Build Project
 
 ```bash
 npm run build
 ```
 
-Run production build
+## Production Mode
 
 ```bash
 npm start
@@ -92,11 +167,11 @@ npm start
 
 ---
 
-## 🗄️ Database
+# 🗄️ Database
 
 This project uses **PostgreSQL** as the database.
 
-The connection is established using the **pg Pool**, which efficiently manages multiple database connections and improves application performance.
+The connection is created using the **pg Pool**, which efficiently manages multiple database connections and improves application performance.
 
 Example:
 
@@ -112,66 +187,70 @@ const pool = new Pool({
 
 ---
 
-## 🧑 User API
+# 🧑 User API
 
 | Method | Endpoint | Description |
-|---------|----------|-------------|
+|--------|----------|-------------|
 | GET | `/users` | Get all users |
-| GET | `/users/:id` | Get a single user |
+| GET | `/users/:id` | Get single user |
 | POST | `/users` | Create a new user |
-| PUT | `/users/:id` | Update a user |
-| DELETE | `/users/:id` | Delete a user |
+| PUT | `/users/:id` | Update user |
+| DELETE | `/users/:id` | Delete user |
 
 ---
 
-## ✅ Todo API
+# ✅ Todo API
 
 | Method | Endpoint | Description |
-|---------|----------|-------------|
+|--------|----------|-------------|
 | GET | `/todos` | Get all todos |
-| GET | `/todos/:id` | Get a single todo |
+| GET | `/todos/:id` | Get single todo |
 | POST | `/todos` | Create a new todo |
-| PUT | `/todos/:id` | Update a todo |
-| DELETE | `/todos/:id` | Delete a todo |
+| PUT | `/todos/:id` | Update todo |
+| DELETE | `/todos/:id` | Delete todo |
 
 ---
 
-## 🔗 Database Relationship
+# 🔗 Database Relationship
 
-This project implements a **One-to-Many** relationship.
+This project implements a **One-to-Many Relationship**.
 
 - One User can have multiple Todos.
-- Every Todo belongs to one User.
+- Each Todo belongs to one User.
+
 
 ```
 User
------
-id (PK)
+----------------
+id (Primary Key)
 name
 email
 
-      │
-      │ One
-      ▼
+
+        |
+        | One
+        |
+        ▼
+
 
 Todo
------
-id (PK)
+----------------
+id (Primary Key)
 title
 description
 completed
-user_id (FK)
+user_id (Foreign Key)
 ```
 
 ---
 
-## 🧩 Middleware
+# 🧩 Middleware
 
 The project includes custom middleware for:
 
 - Request handling
 - Error handling
-- 404 Not Found route
+- Invalid route handling
 
 Example:
 
@@ -181,9 +260,9 @@ app.use("*", notFoundHandler);
 
 ---
 
-## ❌ Not Found Route
+# ❌ Not Found Route Handler
 
-If a user requests an endpoint that doesn't exist, the server returns:
+If a user requests an invalid endpoint, the API returns:
 
 ```json
 {
@@ -194,23 +273,25 @@ If a user requests an endpoint that doesn't exist, the server returns:
 
 ---
 
-## 📚 What I Learned
+# 📚 What I Learned
 
 - Building REST APIs using Express.js and TypeScript
-- Installing and configuring PostgreSQL
-- Connecting PostgreSQL using `pg` Pool
-- Creating reusable database connections
+- PostgreSQL database integration
+- Using `pg` Pool for database connections
 - Designing relational databases
 - Implementing One-to-Many relationships
 - Performing CRUD operations
-- Writing modular Express routes
-- Using middleware in Express
-- Handling invalid routes with a custom 404 middleware
-- Managing environment variables with dotenv
+- Understanding MVC architecture
+- Refactoring MVC into Modular Architecture
+- Creating scalable backend structures
+- Separating business logic using service layers
+- Using Express middleware
+- Handling errors and invalid routes
+- Managing environment variables
 
 ---
 
-## 🤝 Contributing
+# 🤝 Contributing
 
 Contributions are welcome!
 
@@ -218,13 +299,13 @@ Feel free to fork this repository, create a new branch, and submit a pull reques
 
 ---
 
-## 📄 License
+# 📄 License
 
 This project is licensed under the MIT License.
 
 ---
 
-## 👨‍💻 Author
+# 👨‍💻 Author
 
 **Mehedi Hasan Raju**
 
