@@ -3,7 +3,9 @@ import config from '.';
 //DB
 export const pool = new Pool({
     connectionString: `${config.connectionString}`,
-})
+    ssl: {rejectUnauthorized: false},
+
+});
 
 const initDB = async () => {
     await pool.query(`

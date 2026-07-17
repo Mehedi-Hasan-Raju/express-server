@@ -4,6 +4,8 @@ import config from './config';
 import logger from './middleware/logger';
 import { userRoute } from './modules/users/users.routes';
 import { todosroutes } from './modules/todos/todos.routes';
+import { authRoutes } from './modules/auth/auth.routes';
+
 
 
 
@@ -30,7 +32,8 @@ app.use('/users', userRoute)
 //todo CRUD
 app.use('/todos',todosroutes)
 
-
+//AUTH
+app.use("/auth", authRoutes);
 
 app.use((req: Request, res: Response) => {
     res.status(404).json({
